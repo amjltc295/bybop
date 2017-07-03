@@ -12,6 +12,7 @@ from Bybop_Discovery import *
 from Bybop_Connection import *
 import arsdkparser
 
+
 class State(object):
     """
     Three level dictionnary to save the internal state of a Device.
@@ -20,23 +21,26 @@ class State(object):
     The second level key is the project of the classs.
     The third level key is the command.
 
-    The content for each command depends on the command type. For normal commands,
-    the content is a dictionnary of arguments in the form { 'name':value ... }. If
-    the command is a list command, then the content is a list of arguments dictionnaries.
-    If the command is a map command, then the content is a dictionnary of arguments
-    dictionnaries, indexed by their first argument.
+    The content for each command depends on the command type.
+    For normal commands, the content is a dictionnary of arguments
+    in the form { 'name':value ... }. If the command is a list command,
+    then the content is a list of arguments dictionnaries.
+    If the command is a map command, then the content is a dictionnary
+    of arguments     dictionnaries, indexed by their first argument.
 
     This class use internal locks to allow proper multithread access.
 
-    This class also implements a wait_for function to do non-busy wait for commands
-    reception (i.e. wait for an answer from the device), with an optionnal timeout.
+    This class also implements a wait_for function to do non-busy wait
+    for commands reception (i.e. wait for an answer from the device),
+    with an optionnal timeout.
     """
 
     def __init__(self):
         """
         Create a new, empty, state.
 
-        Creating a new state should only be done from an Device __init__ function.
+        Creating a new state should only be done from
+        an Device __init__ function.
         """
         self._dict = {}
         self._waitlist = {}
@@ -44,13 +48,13 @@ class State(object):
         self._waitid = 0
 
     def _getcldic(self, pr, cl, create=True):
-        if not pr in self._dict:
+        if pr not in self._dict:
             if create:
                 self._dict[pr] = {}
             else:
                 return None
         pr_d = self._dict[pr]
-        if not cl in pr_d:
+        if cl not in pr_d:
             if create:
                 pr_d[cl] = {}
             else:
@@ -73,11 +77,11 @@ class State(object):
             event = threading.Event()
             wid = self._waitid
             self._waitid += 1
-            if not name in self._waitlist:
+            if name not in self._waitlist:
                 self._waitlist[name] = {}
             self._waitlist[name][wid] = event
 
-        res =  event.wait(timeout)
+        res = event.wait(timeout)
 
         with self._lock:
             if res:
@@ -149,19 +153,19 @@ class State(object):
         """
         with self._lock:
             pr_cl = self._getcldic(pr, cl)
-            if not cmd in pr_cl:
+            if cmd not in pr_cl:
                 pr_cl[cmd] = {}
             pr_cl[cmd][key] = copy.deepcopy(args)
             self._signal_waiting(pr, cl, cmd)
-
 
     def get_value(self, name):
         """
         Get the current value of a command.
 
         For never received commands, None is returned
-        For normal commands, an arguments dictionnary in the { 'name':value ... } format is
-        returned. For list-commands, a list of such disctionnaries is returned. For map-commands,
+        For normal commands, an arguments dictionnary in the
+        { 'name':value ... } format is returned. For list-commands,
+        a list of such disctionnaries is returned. For map-commands,
         a dictionnary of such dictionnaries is returned.
 
         Arguments:
@@ -409,7 +413,8 @@ class BebopDrone(Device):
 
     def _init_product(self):
         # Deactivate video streaming
-        self.send_data('ardrone3.MediaStreaming.VideoEnable', 0)
+        # self.send_data('ardrone3.MediaStreaming.VideoEnable', 0)
+        self.send_data('ardrone3.MediaStreaming.VideoEnable', 1)
 
     def take_off(self):
         """
@@ -430,6 +435,31 @@ class BebopDrone(Device):
         An emergency request shuts down the motors.
         """
         self.send_data('ardrone3.Piloting.Emergency')
+
+    def take_picture(self):
+        """
+        Send a picture taking request to the Bebop Drone.
+        """
+        print ("PV2")
+        self.send_data('ardrone3.MediaRecord.PictureV2')
+        """
+        print ("PV")
+        self.send_data('ardrone3.MediaRecord.Picture', 254)
+        print ("V2")
+        self.send_data('ardrone3.MediaRecord.VideoV2', 1)
+        #print ("V")
+        #self.send_data('ardrone3.MediaRecord.Video', 1, 255)
+        """
+       #  self.wait_answer('common.MediaRecordState.PictureStateChanged')
+        self.send_data('ardrone3.MediaStreaming.VideoStreamMode', 2)
+        print (self._state.get_value('ardrone3.MediaRecordEvent.PictureEventChanged'))
+        return self._state.get_value('ardrone3.MediaRecordState.PictureStateChangedV2')#['mass_storage_id']
+        #print self._state.get_value('ardrone3.MediaRecordState.VideoResolutionState')
+        #return self._state.get_value('ardrone3.MediaRecordState.VideoStateChangedV2')#['mass_storage_id']
+        """
+        except:
+            return 0
+        """
 
 class JumpingSumo(Device):
     def __init__(self, ip, c2d_port, d2c_port):

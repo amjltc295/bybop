@@ -70,6 +70,9 @@ class NetworkAL(object):
         self._send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._recv_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._recv_sock.settimeout(5.0)
+        # Add to enable reconnection
+        self._recv_sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+
         self._recv_sock.bind(('0.0.0.0', self._d2c_port))
         self._thread = threading.Thread(target=self._read_loop)
         self._thread.start()
