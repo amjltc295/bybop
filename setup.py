@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
         name="bybop",
-        version="0.1.0",
+        version="0.1.1",
         install_requires=['arsdkxml>0.9'],
         packages=find_packages(),
         package_dir={'bybop': 'bybop'},

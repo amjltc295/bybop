@@ -1,14 +1,15 @@
 import os
 import sys
 import struct
+import arsdkxml.arsdkparser as arsdkparser
 
 MY_PATH, _ = os.path.split(os.path.realpath(__file__))
-ARSDK_PATH=os.path.join(MY_PATH,'..', 'arsdk-xml')
+#ARSDK_PATH=os.path.join(MY_PATH,'..', 'arsdk-xml')
+ARSDK_PATH=os.path.dirname(arsdkparser.__file__)
 ARCOMMANDS_PATH=os.path.join(ARSDK_PATH, 'xml')
 
 sys.path.append(ARSDK_PATH)
 
-import arsdkparser
 
 _ctx = arsdkparser.ArParserCtx()
 arsdkparser.parse_xml(_ctx, os.path.join(ARCOMMANDS_PATH, 'generic.xml'))
