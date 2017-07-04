@@ -6,6 +6,23 @@ I pack the arsdk-xml submodule [here](https://github.com/amjltc295/arsdkxml).
 
 Please tell me if this infringes the copy right.
 
+## Prerequistes
+
+* Python
+* arsdkxml
+* setuptool
+
+## Installation
+
+For latest version
+```
+python setup.py install
+```
+
+Pip install
+```
+pip install bybop
+```
 
 ## License
 
