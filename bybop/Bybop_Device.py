@@ -469,7 +469,7 @@ class BebopDrone(Device):
         #self.send_data('ardrone3.MediaRecord.Video', 1, 255)
         """
         print (self._state.get_value('ardrone3.MediaRecordState.PictureStateChangedV2'))
-        return self.wait_answer('common.MediaRecordEvent.PictureEventChangedV2')
+        return (self.wait_answer('ardrone3.MediaRecordState.PictureStateChangedV2'))
         print ("else")
         self.send_data('ardrone3.MediaStreaming.VideoStreamMode', 2)
         #print self._state.get_value('ardrone3.MediaRecordState.VideoResolutionState')
