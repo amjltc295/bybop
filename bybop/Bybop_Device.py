@@ -420,13 +420,13 @@ class BebopDrone(Device):
         """
         Send a take off request to the Bebop Drone.
         """
-        self.send_data('ardrone3.Piloting.TakeOff')
+        return self.send_data('ardrone3.Piloting.TakeOff')
 
     def land(self):
         """
         Send a landing request to the Bebop Drone.
         """
-        self.send_data('ardrone3.Piloting.Landing')
+        return self.send_data('ardrone3.Piloting.Landing')
 
     def emergency(self):
         """
@@ -434,14 +434,32 @@ class BebopDrone(Device):
 
         An emergency request shuts down the motors.
         """
-        self.send_data('ardrone3.Piloting.Emergency')
+        return self.send_data('ardrone3.Piloting.Emergency')
+
+    def move_to(self, latitude, longtitude, altitude, orientation_mode, heading):
+        """
+        Move to a location.
+        """
+        if latitude > 90 or latitude < -90 \
+                or longtitude > 180 or longtitude < -180 \
+                or altitude > 1000 or altitude < 0 \
+                or orientation_mode > 3 or orientation_mode < 0 \
+                or heading > 360 or heading < 0:
+                    print ("Error: invalid input for move_to")
+                    return False
+        return self.send_data('ardrone3.Piloting.moveTo',
+                              latitude,
+                              longtitude,
+                              altitude,
+                              orientation_mode,
+                              heading)
 
     def take_picture(self):
         """
         Send a picture taking request to the Bebop Drone.
         """
         print ("PV2")
-        self.send_data('ardrone3.MediaRecord.PictureV2')
+        print self.send_data('ardrone3.MediaRecord.PictureV2')
         """
         print ("PV")
         self.send_data('ardrone3.MediaRecord.Picture', 254)
@@ -450,10 +468,10 @@ class BebopDrone(Device):
         #print ("V")
         #self.send_data('ardrone3.MediaRecord.Video', 1, 255)
         """
-       #  self.wait_answer('common.MediaRecordState.PictureStateChanged')
+        print (self._state.get_value('ardrone3.MediaRecordState.PictureStateChangedV2'))
+        return (self.wait_answer('ardrone3.MediaRecordState.PictureStateChangedV2'))
+        print ("else")
         self.send_data('ardrone3.MediaStreaming.VideoStreamMode', 2)
-        print (self._state.get_value('ardrone3.MediaRecordEvent.PictureEventChanged'))
-        return self._state.get_value('ardrone3.MediaRecordState.PictureStateChangedV2')#['mass_storage_id']
         #print self._state.get_value('ardrone3.MediaRecordState.VideoResolutionState')
         #return self._state.get_value('ardrone3.MediaRecordState.VideoStateChangedV2')#['mass_storage_id']
         """
